@@ -1,26 +1,46 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './index.scss';
+import Users from './components/Users/Users';
+import Success from './components/Success';
+import { useEffect, useState } from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+
+const App = () => {
+
+    const [users, setUsers] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [invites, setInvites] = useState([]);
+    const [success, setSuccess] = useState(false)
+
+    useEffect(() => {
+        fetch('https://reqres.in/api/users')
+            .then(res => res.json())
+            .then(json => {
+                setUsers(json.data)
+            })
+            .catch(err => {
+                console.warn(err);
+                alert('Ошибка при получении пользователей');
+            })
+            .finally(() => setIsLoading(false))
+    }, [])
+
+    return (
+        <div className="App">
+            {
+                success
+                    ? <Success
+                        count={invites.length}
+                        setSuccess={setSuccess} />
+                    : <Users
+                        users={users}
+                        isLoading={isLoading}
+                        invites={invites}
+                        setInvites={setInvites}
+                        setSuccess={setSuccess} />
+            }
+        </div>
+    );
+};
+
 
 export default App;
